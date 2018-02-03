@@ -5,8 +5,9 @@ using System.Collections;
 public class AI_Runner : MonoBehaviour
 {
 	public Animator animator;
+	public GameObject dieEffect;
 	public int health = 3;
-	public float attackDistance = 4.5f;
+	public float attackDistance = 1.8f;
 	public float attackSpeed = 1f;
 	public bool isDead;
 
@@ -57,8 +58,15 @@ public class AI_Runner : MonoBehaviour
 		//Check if the amount of damage was enough to kill this enemy.
 		if(health <= 0)
 		{
-			//Set the state to dead and destroy the enemy object.
+			//Set the dying state of the enemy.
 			isDead = true;
+
+			//Spawn the destroy effect at the enemy's position.
+			GameObject destroyEffect = Instantiate(dieEffect, transform.position, transform.rotation);
+			Destroy(destroyEffect, 5);
+
+			//Destroy the enemy.
+			StopAllCoroutines();
 			Destroy(gameObject);
 		}
 	}

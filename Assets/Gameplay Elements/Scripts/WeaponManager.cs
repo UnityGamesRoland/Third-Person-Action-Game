@@ -31,6 +31,10 @@ public class WeaponManager : MonoBehaviour
 			//Update the weapon name display;
 			weaponNameText.text = info.weapon.weaponName;
 
+			//Update the bullet display's text.
+			bulletsInClipText.text = info.weapon.bulletsInClip.ToString();
+			bulletsInInventoryText.text = info.bullets.ToString();
+
 			//Update the weapon HUD.
 			weaponHUD.alpha = Mathf.Lerp(weaponHUD.alpha, 1, Time.deltaTime * 10);
 
@@ -63,7 +67,7 @@ public class WeaponManager : MonoBehaviour
 	private void Shoot()
 	{
 		//Generate the spread vector.
-		Vector3 spreadVector = new Vector3(Random.Range(-1.8f, 1.8f), Random.Range(-1.8f, 1.8f), 0);
+		Vector3 spreadVector = new Vector3(Random.Range(-info.weapon.bulletSpread, info.weapon.bulletSpread), Random.Range(-info.weapon.bulletSpread, info.weapon.bulletSpread), 0);
 
 		//Store the instantiated bullet and set its damage and speed.
 		WeaponBullet bullet = Instantiate(bulletPrefab, muzzlePosition.position, Quaternion.Euler(muzzlePosition.localEulerAngles + spreadVector)) as WeaponBullet;
@@ -71,9 +75,6 @@ public class WeaponManager : MonoBehaviour
 
 		//Update the bullet count.
 		info.weapon.bulletsInClip --;
-
-		//Update the bullet display.
-		UpdateBulletDisplay();
 
 		//Update the action timer.
 		actionTimer = Time.time + info.weapon.fireRate;
@@ -105,15 +106,5 @@ public class WeaponManager : MonoBehaviour
 			info.weapon.bulletsInClip += bulletsToLoad;
 			info.bullets -= bulletsToLoad;
 		}
-
-		//Update the bullet display.
-		UpdateBulletDisplay();
-	}
-
-	private void UpdateBulletDisplay()
-	{
-		//Update the bullet display's text.
-		bulletsInClipText.text = info.weapon.bulletsInClip.ToString();
-		bulletsInInventoryText.text = info.bullets.ToString();
 	}
 }

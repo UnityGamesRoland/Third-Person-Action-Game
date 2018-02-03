@@ -2,6 +2,8 @@
 
 public class WeaponBullet : MonoBehaviour
 {
+	public GameObject surfaceHitEffect;
+	public GameObject enemyHitEffect;
 	public LayerMask collisionLayer;
 	private float bulletSpeed;
 
@@ -9,8 +11,6 @@ public class WeaponBullet : MonoBehaviour
 	{
 		//In case the bullet doesn't hit anything, destroy it a few seconds after it spawned.
 		Destroy(gameObject, 3);
-
-
 	}
 
 	private void Update()
@@ -35,7 +35,14 @@ public class WeaponBullet : MonoBehaviour
 		if(Physics.Raycast(ray, out hit, moveDistance, collisionLayer, QueryTriggerInteraction.Collide))
 		{
 			//Check if we hit an enemy and apply damage on him.
-			if(hit.transform.CompareTag("Enemy")) hit.transform.SendMessageUpwards("TakeDamage", 1);
+			if(hit.transform.CompareTag("Enemy"))
+			{
+				hit.transform.SendMessageUpwards("TakeDamage", 1);
+				Instantiate(enemyHitEffect, hit.point, Quaternion.identity);
+			}
+
+			//Spawn the hit effect.
+			else Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
 
 			//Destroy the bullet.
 			Destroy(gameObject);

@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class InteractableItem : MonoBehaviour
 {
 	public enum ItemType {weapon, bullets}
 	public ItemType itemType;
-
+	public Vector3 interactDisplayOffset;
 	public string itemName = "New Item";
 	public int bullets = 10;
 	public WeaponAsset weapon;

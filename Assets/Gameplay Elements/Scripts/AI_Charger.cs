@@ -6,6 +6,8 @@ public class AI_Charger : MonoBehaviour
 {
 	public Animator animator;
 	public ParticleSystem chargeParticle;
+	public GameObject dieEffect;
+	public GameObject explodeEffect;
 	public LayerMask collisionLayer;
 	public int health = 3;
 	public float attackSpeed = 2f;
@@ -14,6 +16,7 @@ public class AI_Charger : MonoBehaviour
 	public bool isDead;
 	public bool isCharging;
 
+	private float distanceToTarget;
 	private float attackTimer;
 
 	private NavMeshAgent agent;
@@ -36,6 +39,16 @@ public class AI_Charger : MonoBehaviour
 
 	private void Update()
 	{
+		//Calculate the distance between the enemy and the player, and try charging.
+		distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
+
+		//Check if the player is in explosion range.
+		if(distanceToTarget <= 1.4f)
+		{
+			//Explode the enemy.
+			TakeDamage(100);
+		}
+
 		//Check if the enemy is charging.
 		if(!isCharging)
 		{
@@ -56,8 +69,26 @@ public class AI_Charger : MonoBehaviour
 		//Check if the amount of damage was enough to kill this enemy.
 		if(health <= 0)
 		{
-			//Set the state to dead and destroy the enemy object.
+			//Set the dying state of the enemy.
 			isDead = true;
+
+			//Check if damage take from bullet.
+			if(damage != 100)
+			{
+				//Spawn the destroy effect at the enemy's position.
+				GameObject destroyEffect = Instantiate(dieEffect, transform.position, transform.rotation);
+				Destroy(destroyEffect, 5);
+			}
+
+			//Check if damage taken from other source.
+			else
+			{
+				//Spawn the destroy effect at the enemy's position.
+				GameObject destroyEffect = Instantiate(explodeEffect, transform.position, transform.rotation);
+				Destroy(destroyEffect, 3);
+			}
+
+			//Destroy the enemy.
 			StopAllCoroutines();
 			Destroy(gameObject);
 		}
@@ -71,8 +102,7 @@ public class AI_Charger : MonoBehaviour
 			//Check if the enemy can charge.
 			if(Time.time > attackTimer)
 			{
-				//Calculate the distance between the enemy and the player, and try charging.
-				float distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
+				//Check if the enemy is in the right range to charge.
 				if(distanceToTarget < maxChargeDistance && distanceToTarget > minChargeDistance)
 				{
 					//Try charging at the player.
@@ -140,7 +170,8 @@ public class AI_Charger : MonoBehaviour
 		bool hasChargedAgain = false;
 
 		//Update the enemy's speed and set it's path.
-		agent.speed = 15f;
+		agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+		agent.speed = 16f;
 		agent.SetPath(path);
 
 		//Get the distance of the charge.
@@ -160,7 +191,7 @@ public class AI_Charger : MonoBehaviour
 			double formatedDistance = System.Math.Round(distancePercent, 1);
 
 			//Round the percentage and check the progress.
-			if(formatedDistance <= 0.4f && !hasChargedAgain)
+			if(formatedDistance <= 0.5f && !hasChargedAgain)
 			{
 				//Calculate the charge position and get the path.
 				Vector3 chargePosition = target.transform.position + (controller.velocity + ((target.transform.position - transform.position).normalized * 2.3f)) * controller.velocity.normalized.magnitude;
@@ -179,7 +210,8 @@ public class AI_Charger : MonoBehaviour
 
 		//Update the enemy's speed and set it's path.
 		isCharging = false;
-		agent.speed = 2f;
+		agent.speed = 3.7f;
+		agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
 		//Stop the charging effect.
 		chargeParticle.Stop();

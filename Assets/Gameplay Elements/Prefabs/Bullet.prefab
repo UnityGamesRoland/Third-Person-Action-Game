@@ -188,6 +188,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c11094735c039f94699a3917cc1f9d78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  surfaceHitEffect: {fileID: 1293784414681444, guid: d4d1592823c95c143a21f0b4a57a4d40,
+    type: 2}
+  enemyHitEffect: {fileID: 1230536452278606, guid: 3086d1c0819f7b04182ff5f60cafa4ba,
+    type: 2}
   collisionLayer:
     serializedVersion: 2
     m_Bits: 4294967035

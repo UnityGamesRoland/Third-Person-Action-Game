@@ -1762,7 +1762,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1985002537747340}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000032782552}
-  m_LocalPosition: {x: 12.29, y: 0, z: 11.37}
+  m_LocalPosition: {x: 14.03, y: 0, z: 12.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4801941108469406}
@@ -2148,7 +2148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 95962437268950226}
-  health: 3
+  dieEffect: {fileID: 1901008037341670, guid: 51b00a5324de8fc49ba16cc545988c03, type: 2}
+  health: 1
   attackDistance: 1.8
   attackSpeed: 1
   isDead: 0
@@ -2320,7 +2321,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.4
-  m_Speed: 6.4
+  m_Speed: 6.8
   m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 500

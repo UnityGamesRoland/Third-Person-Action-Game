@@ -75,7 +75,7 @@ public class TP_Motor : MonoBehaviour
 		controller.Move(movement.moveVelocity * Time.deltaTime);
 
 		//Reset the gravity force.
-		if(passive.isGrounded && !passive.isSliding) movement.currentSpeed.y = 0;
+		if(passive.isGrounded) movement.currentSpeed.y = 0;
 	}
 
 	private void DescendSlope(ref Vector3 direction)
@@ -97,7 +97,7 @@ public class TP_Motor : MonoBehaviour
 				float slopeAngle = Vector3.Angle(descendHit.normal, Vector3.up);
 
 				//Check if we are on a slope.
-				if(slopeAngle != 0 && slopeAngle <= maxSlopeAngle)
+				if(slopeAngle != 0 && slopeAngle <= maxSlopeAngle && !passive.isDescendingSlope)
 				{
 					//Check if we are close enough to the slope to move on it.
 					if(descendHit.distance - controller.skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(new Vector3(direction.x, 0, direction.z).magnitude))
@@ -114,6 +114,7 @@ public class TP_Motor : MonoBehaviour
 
 						//Update the grounded state.
 						passive.isGrounded = true;
+						passive.isDescendingSlope = true;
 					}
 				}
 			}
@@ -157,7 +158,7 @@ public class TP_Motor : MonoBehaviour
 		//Reset the passive states.
 		passive.isGrounded = controller.isGrounded;
 		passive.isMoving = (input.magnitude > 0) ? true : false;
-		passive.isSliding = false;
+		passive.isDescendingSlope = false;
 	}
 
 	private void SetTargetMoveSpeed(Vector2 input)
@@ -233,7 +234,7 @@ public class TP_Motor : MonoBehaviour
 	public struct PassiveStates
 	{
 		public bool isGrounded;
-		public bool isSliding;
+		public bool isDescendingSlope;
 		public bool isMoving;
 		public bool isDashing;
 	}

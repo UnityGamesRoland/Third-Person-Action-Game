@@ -2002,7 +2002,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1796778377651638}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: -0.00000032782552}
-  m_LocalPosition: {x: -13.92, y: 0, z: 16.51}
+  m_LocalPosition: {x: -17.33, y: 0, z: 11.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4255673589065194}
@@ -2193,6 +2193,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 95704511915811516}
   chargeParticle: {fileID: 198670911012032590}
+  dieEffect: {fileID: 1901008037341670, guid: 51b00a5324de8fc49ba16cc545988c03, type: 2}
+  explodeEffect: {fileID: 1400106261465472, guid: 5661e2d18b35a4a4295e41f91e4591dc,
+    type: 2}
   collisionLayer:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -2375,10 +2378,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.4
-  m_Speed: 2
+  m_Speed: 3.2
   m_Acceleration: 50
   avoidancePriority: 50
-  m_AngularSpeed: 500
+  m_AngularSpeed: 1000
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -2447,7 +2450,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1438715472
+  randomSeed: 1411188000
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -2834,7 +2837,7 @@ ParticleSystem:
     angle: 25
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 0
+    radiusThickness: 1
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}

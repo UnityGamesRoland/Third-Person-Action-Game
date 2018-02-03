@@ -11,9 +11,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3678e54c4d0f6b445aad1bfa0e613817, type: 3}
   m_Name: PrototypeRifle
   m_EditorClassIdentifier: 
-  weaponName: Prototype Assault Rifle
+  weaponName: Prototype Plasma Rifle
   clipSize: 30
-  bulletSpeed: 55
+  bulletSpeed: 60
   fireRate: 0.1
   reloadTime: 1
-  bulletsInClip: 0
+  bulletsInClip: 25

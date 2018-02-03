@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class InteractArea : MonoBehaviour
 {
-	private List<GameObject> interactableObjects;
+	private List<InteractableItem> interactableObjects;
 	private InteractManager manager;
 
 	private void Start()
@@ -21,24 +22,24 @@ public class InteractArea : MonoBehaviour
 		Collider[] objectsInArea = Physics.OverlapBox(transform.position, transform.localScale, Quaternion.identity, manager.interactLayer, QueryTriggerInteraction.Collide);
 
 		//Reset the array.
-		interactableObjects = new List<GameObject>();
+		interactableObjects = new List<InteractableItem>();
 
 		//Loop through all the colliders that are inside the area.
 		for(int i = 0; i < objectsInArea.Length; i++)
 		{
 			//Assign the colliders to gameObjects.
-			interactableObjects.Add(objectsInArea[i].gameObject);
+			interactableObjects.Add(objectsInArea[i].GetComponent<InteractableItem>());
 		}
 	}
 
-	private GameObject GetClosestInteractable()
+	private InteractableItem GetClosestInteractable()
 	{
 		//Create the holders for the closest object and the distance.
-		GameObject closestInteractable = null;
+		InteractableItem closestInteractable = null;
 		float closestDistance = Mathf.Infinity;
 
 		//Loop through every interactable inside the area.
-		foreach(GameObject interactable in interactableObjects)
+		foreach(InteractableItem interactable in interactableObjects)
 		{
 			//Get the direction and the distance from the target.
 			Vector3 directionToTarget = interactable.transform.position - manager.transform.position;
@@ -63,15 +64,35 @@ public class InteractArea : MonoBehaviour
 		if(!col.CompareTag("Player") && interactableObjects.Count > 0) return;
 
 		//Get the closest interactable to the player.
-		GameObject closestInteractable = GetClosestInteractable();
+		InteractableItem closestInteractable = GetClosestInteractable();
 
-		//Check for interact input.
-		if(Input.GetKeyDown(KeyCode.E) && closestInteractable != null && manager.canInteract)
+		//Check if there is an object the player can interact with.
+		if(closestInteractable != null && manager.canInteract)
 		{
-			//Send the player object through and execute the interaction with the object.
-			interactableObjects.Remove(closestInteractable);
-			closestInteractable.SendMessage("Interact", manager.gameObject);
+			//Update the manager's interaction state and send the closest interactable object.
+			manager.hasAvailableInteraction = true;
+			manager.closestInteractable = closestInteractable;
+
+			//Check for interact input.
+			if(Input.GetKeyDown(KeyCode.E))
+			{
+				//Send the player object through and execute the interaction with the object.
+				interactableObjects.Remove(closestInteractable);
+				closestInteractable.Interact(manager.gameObject);
+
+				//Update the manager's interaction state.
+				if(interactableObjects.Count == 0) manager.hasAvailableInteraction = false;
+			}
 		}
+	}
+
+	private void OnTriggerExit(Collider col)
+	{
+		//Make sure that the collider which entered the area is the player's collider.
+		if(!col.CompareTag("Player") && interactableObjects.Count > 0) return;
+
+		//Update the manager's interaction state.
+		manager.hasAvailableInteraction = false;
 	}
 
 	private void OnDrawGizmosSelected()
