@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Name: PrototypeRifle
   m_EditorClassIdentifier: 
   weaponName: Prototype Plasma Rifle
-  clipSize: 30
+  clipSize: 40
+  bulletSpread: 0.7
   bulletSpeed: 60
-  fireRate: 0.1
-  reloadTime: 1
-  bulletsInClip: 25
+  fireRate: 0.105
+  reloadTime: 1.67
+  shootSound: {fileID: 8300000, guid: 359f0aea98291b2469d02e94f126cfd4, type: 3}
+  reloadSound: {fileID: 8300000, guid: c01924cc64907674f8f007e0820bde0f, type: 3}
+  shotVolume: 0.4
+  reloadVolume: 0.5
+  bulletsInClip: 40

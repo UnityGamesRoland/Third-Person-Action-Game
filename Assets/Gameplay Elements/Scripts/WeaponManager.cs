@@ -7,17 +7,20 @@ public class WeaponManager : MonoBehaviour
 	public WeaponBullet bulletPrefab;
 	public Transform muzzlePosition;
 	public CanvasGroup weaponHUD;
-	public Text weaponNameText;
 	public Text bulletsInClipText;
 	public Text bulletsInInventoryText;
 
 	private float actionTimer;
+	private float shootTimer;
+
 	private PlayerInformation info;
+	private AudioSource source;
 
 	private void Start()
 	{
 		//Initialization.
-		info = FindObjectOfType<PlayerInformation>();
+		info = PlayerInformation.Instance;
+		source = GetComponent<AudioSource>();
 
 		//Set the default alpha of the weapon display.
 		weaponHUD.alpha = info.combatMode ? 1 : 0;
@@ -28,9 +31,6 @@ public class WeaponManager : MonoBehaviour
 		//Check if we are in combat and that we have a weapon.
 		if(info.combatMode && info.weapon != null)
 		{
-			//Update the weapon name display;
-			weaponNameText.text = info.weapon.weaponName;
-
 			//Update the bullet display's text.
 			bulletsInClipText.text = info.weapon.bulletsInClip.ToString();
 			bulletsInInventoryText.text = info.bullets.ToString();
@@ -38,22 +38,18 @@ public class WeaponManager : MonoBehaviour
 			//Update the weapon HUD.
 			weaponHUD.alpha = Mathf.Lerp(weaponHUD.alpha, 1, Time.deltaTime * 10);
 
-			//Check if the timer is ready.
-			if(Time.time > actionTimer)
+			//Check for shooting input.
+			if(Input.GetMouseButton(0) && info.weapon.bulletsInClip > 0 && Time.time > actionTimer && Time.time > shootTimer && !TP_Motor.Instance.passive.isDashing)
 			{
-				//Check for shooting input.
-				if(Input.GetMouseButton(0) && info.weapon.bulletsInClip > 0)
-				{
-					//Launch a projectile from the muzzle.
-					Shoot();
-				}
+				//Launch a projectile from the muzzle.
+				Shoot();
+			}
 
-				//Check for reloading input.
-				if(Input.GetKeyDown(KeyCode.R) && info.weapon.bulletsInClip < info.weapon.clipSize)
-				{
-					//Start the reloading process.
-					StartCoroutine(Reload());
-				}
+			//Check for reloading input.
+			if(Input.GetKeyDown(KeyCode.R) && info.weapon.bulletsInClip < info.weapon.clipSize && Time.time > actionTimer && info.bullets > 0)
+			{
+				//Start the reloading process.
+				StartCoroutine(Reload());
 			}
 		}
 
@@ -76,14 +72,23 @@ public class WeaponManager : MonoBehaviour
 		//Update the bullet count.
 		info.weapon.bulletsInClip --;
 
+		//Play the shooting sound.
+		source.PlayOneShot(info.weapon.shootSound, info.weapon.shotVolume);
+
 		//Update the action timer.
-		actionTimer = Time.time + info.weapon.fireRate;
+		shootTimer = Time.time + info.weapon.fireRate;
+
+		//After the shot check if we should reload or not.
+		if(info.weapon.bulletsInClip == 0 && Time.time > actionTimer && info.bullets > 0) StartCoroutine(Reload());
 	}
 
 	private IEnumerator Reload()
 	{
 		//Update the action timer.
 		actionTimer = Time.time + info.weapon.reloadTime;
+
+		//Play the shooting sound.
+		source.PlayOneShot(info.weapon.reloadSound, info.weapon.reloadVolume);
 
 		//Delay the actual reloading mechanics.
 		yield return new WaitForSeconds(info.weapon.reloadTime);

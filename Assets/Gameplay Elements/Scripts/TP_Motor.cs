@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
 public class TP_Motor : MonoBehaviour
@@ -24,11 +25,19 @@ public class TP_Motor : MonoBehaviour
 	private PlayerInformation info;
 	private CharacterController controller;
 
+	#region Singleton
+	public static TP_Motor Instance {get; private set;}
+	private void Awake()
+	{
+		if(Instance == null) Instance = this;
+	}
+	#endregion
+
 	private void Start()
 	{
 		//Initialization.
 		anim = GetComponent<TP_Animations>();
-		info = GetComponent<PlayerInformation>();
+		info = PlayerInformation.Instance;
 		controller = GetComponent<CharacterController>();
 
 		//Set the max slope angle.
@@ -97,10 +106,13 @@ public class TP_Motor : MonoBehaviour
 				float slopeAngle = Vector3.Angle(descendHit.normal, Vector3.up);
 
 				//Check if we are on a slope.
-				if(slopeAngle != 0 && slopeAngle <= maxSlopeAngle && !passive.isDescendingSlope)
+				if(slopeAngle != 0 && slopeAngle <= maxSlopeAngle)
 				{
+					//Update the slope state.
+					passive.isOnSlope = true;
+
 					//Check if we are close enough to the slope to move on it.
-					if(descendHit.distance - controller.skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(new Vector3(direction.x, 0, direction.z).magnitude))
+					if(descendHit.distance - controller.skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(new Vector3(direction.x, 0, direction.z).magnitude) && !passive.isDescendingSlope)
 					{
 						//Get the amount of movement required to descend the slope properly.
 						float moveDistanceX = Mathf.Abs(direction.x);
@@ -138,6 +150,7 @@ public class TP_Motor : MonoBehaviour
 			{
 				//Get the mouse point.
 				Vector3 mousePoint = ray.GetPoint(rayDistance);
+				info.crosshairObject.transform.position = mousePoint - Vector3.up;
 
 				//Get the look point and rotate the player.
 				Vector3 lookPoint = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
@@ -158,6 +171,7 @@ public class TP_Motor : MonoBehaviour
 		//Reset the passive states.
 		passive.isGrounded = controller.isGrounded;
 		passive.isMoving = (input.magnitude > 0) ? true : false;
+		passive.isOnSlope = false;
 		passive.isDescendingSlope = false;
 	}
 
@@ -199,15 +213,26 @@ public class TP_Motor : MonoBehaviour
 		//Set the dash direction.
 		movement.dashDirection = direction;
 
-		//Update the dashing states.
+		//Update the dashing and damage taking states.
+		info.canTakeDamage = false;
 		passive.isDashing = true;
 		canDash = false;
+
+		//Play the dashing particle.
+		info.dashParticle.Play();
 
 		//Wait for the dashing to complete.
 		yield return new WaitForSeconds(dashTime);
 
-		//Update the dashing states.
+		//Update the dashing and damage taking state.
+		info.canTakeDamage = true;
 		passive.isDashing = false;
+
+		//Stop the dashing particle.
+		info.dashParticle.Stop();
+
+		//Delay the next dash.
+		yield return new WaitForSeconds(0.5f);
 		canDash = true;
 	}
 
@@ -234,6 +259,7 @@ public class TP_Motor : MonoBehaviour
 	public struct PassiveStates
 	{
 		public bool isGrounded;
+		public bool isOnSlope;
 		public bool isDescendingSlope;
 		public bool isMoving;
 		public bool isDashing;

@@ -7,15 +7,17 @@ public class AI_Charger : MonoBehaviour
 	public Animator animator;
 	public ParticleSystem chargeParticle;
 	public GameObject dieEffect;
-	public GameObject explodeEffect;
+	public Renderer body;
 	public LayerMask collisionLayer;
-	public int health = 3;
+	public int health = 2;
 	public float attackSpeed = 2f;
 	public float maxChargeDistance = 140f;
 	public float minChargeDistance = 30f;
+	public bool prewarmDissolving;
 	public bool isDead;
 	public bool isCharging;
 
+	private float dissolveAmount = 0f;
 	private float distanceToTarget;
 	private float attackTimer;
 
@@ -27,7 +29,7 @@ public class AI_Charger : MonoBehaviour
 	{
 		//Initialization.
 		agent = GetComponent<NavMeshAgent>();
-		target = FindObjectOfType<PlayerInformation>();
+		target = PlayerInformation.Instance;
 		controller = target.GetComponent<CharacterController>();
 
 		//Start the basic walking movement.
@@ -35,6 +37,10 @@ public class AI_Charger : MonoBehaviour
 
 		//Make sure that the charging effect only plays when it has to.
 		chargeParticle.Stop();
+
+		//Set the default dissolve amount.
+		body.material.SetFloat("_DissolveAmount", prewarmDissolving ? 0 : 1);
+		dissolveAmount = prewarmDissolving ? 0 : 1;
 	}
 
 	private void Update()
@@ -43,9 +49,10 @@ public class AI_Charger : MonoBehaviour
 		distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
 
 		//Check if the player is in explosion range.
-		if(distanceToTarget <= 1.4f)
+		if(distanceToTarget <= 1.4f && target.canTakeDamage)
 		{
-			//Explode the enemy.
+			//Apply the damage on the player and destroy the enemy.
+			target.TakeHit(1);
 			TakeDamage(100);
 		}
 
@@ -55,6 +62,14 @@ public class AI_Charger : MonoBehaviour
 			//Handle the enemy's movement animations.
 			float moveVelocity = agent.velocity.normalized.magnitude;
 			animator.SetFloat("Velocity", moveVelocity);
+		}
+
+		//Check if we have to update the dissolve amount.
+		if(dissolveAmount != 0)
+		{
+			//Update the dissolve amount.
+			dissolveAmount = Mathf.Lerp(dissolveAmount, 0, Time.deltaTime * 1.3f);
+			body.material.SetFloat("_DissolveAmount", dissolveAmount);
 		}
 	}
 
@@ -72,21 +87,9 @@ public class AI_Charger : MonoBehaviour
 			//Set the dying state of the enemy.
 			isDead = true;
 
-			//Check if damage take from bullet.
-			if(damage != 100)
-			{
-				//Spawn the destroy effect at the enemy's position.
-				GameObject destroyEffect = Instantiate(dieEffect, transform.position, transform.rotation);
-				Destroy(destroyEffect, 5);
-			}
-
-			//Check if damage taken from other source.
-			else
-			{
-				//Spawn the destroy effect at the enemy's position.
-				GameObject destroyEffect = Instantiate(explodeEffect, transform.position, transform.rotation);
-				Destroy(destroyEffect, 3);
-			}
+			//Spawn the destroy effect at the enemy's position.
+			GameObject destroyEffect = Instantiate(dieEffect, transform.position, transform.rotation);
+			Destroy(destroyEffect, 5);
 
 			//Destroy the enemy.
 			StopAllCoroutines();
@@ -191,7 +194,7 @@ public class AI_Charger : MonoBehaviour
 			double formatedDistance = System.Math.Round(distancePercent, 1);
 
 			//Round the percentage and check the progress.
-			if(formatedDistance <= 0.5f && !hasChargedAgain)
+			if(formatedDistance <= 0.5f && distanceToTarget > 5 && !hasChargedAgain)
 			{
 				//Calculate the charge position and get the path.
 				Vector3 chargePosition = target.transform.position + (controller.velocity + ((target.transform.position - transform.position).normalized * 2.3f)) * controller.velocity.normalized.magnitude;

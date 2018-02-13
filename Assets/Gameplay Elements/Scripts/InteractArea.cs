@@ -78,7 +78,10 @@ public class InteractArea : MonoBehaviour
 			{
 				//Send the player object through and execute the interaction with the object.
 				interactableObjects.Remove(closestInteractable);
-				closestInteractable.Interact(manager.gameObject);
+				closestInteractable.Interact();
+
+				//Create the pickup effect.
+				Instantiate(manager.pickupEffect, closestInteractable.transform.position, manager.pickupEffect.transform.rotation);
 
 				//Update the manager's interaction state.
 				if(interactableObjects.Count == 0) manager.hasAvailableInteraction = false;

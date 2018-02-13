@@ -6,12 +6,15 @@ public class AI_Runner : MonoBehaviour
 {
 	public Animator animator;
 	public GameObject dieEffect;
-	public int health = 3;
+	public Renderer body;
+	public int health = 2;
 	public float attackDistance = 1.8f;
 	public float attackSpeed = 1f;
+	public bool prewarmDissolving;
 	public bool isDead;
 
 	private float attackTimer;
+	private float dissolveAmount = 0f;
 
 	private PlayerInformation target;
 	private CharacterController controller;
@@ -21,11 +24,15 @@ public class AI_Runner : MonoBehaviour
 	{
 		//Initialization.
 		agent = GetComponent<NavMeshAgent>();
-		target = FindObjectOfType<PlayerInformation>();
+		target = PlayerInformation.Instance;
 		controller = target.GetComponent<CharacterController>();
 
 		//Set the enemy's destination.
 		StartCoroutine(UpdateDestination());
+
+		//Set the default dissolve amount.
+		body.material.SetFloat("_DissolveAmount", prewarmDissolving ? 0 : 1);
+		dissolveAmount = prewarmDissolving ? 0 : 1;
 	}
 
 	private void Update()
@@ -45,6 +52,14 @@ public class AI_Runner : MonoBehaviour
 		//Handle the enemy's movement animations.
 		float moveVelocity = agent.velocity.normalized.magnitude;
 		animator.SetFloat("Velocity", moveVelocity);
+
+		//Check if we have to update the dissolve amount.
+		if(dissolveAmount != 0)
+		{
+			//Update the dissolve amount.
+			dissolveAmount = Mathf.Lerp(dissolveAmount, 0, Time.deltaTime * 1.3f);
+			body.material.SetFloat("_DissolveAmount", dissolveAmount);
+		}
 	}
 
 	public void TakeDamage(int damage)
@@ -80,7 +95,13 @@ public class AI_Runner : MonoBehaviour
 		//Sync the damage to the animation.
 		yield return new WaitForSeconds(0.37f);
 
-		//Apply the damage on the player.
+		//Calculate the distance and check if the attack is still in hit range.
+		float distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
+		if(distanceToTarget < attackDistance)
+		{
+			//Apply the damage on the player
+			target.TakeHit(1);
+		}
 	}
 
 	private IEnumerator UpdateDestination()

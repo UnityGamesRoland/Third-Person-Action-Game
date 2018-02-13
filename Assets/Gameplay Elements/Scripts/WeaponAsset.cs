@@ -11,6 +11,10 @@ public class WeaponAsset : ScriptableObject
 	public int bulletSpeed = 40;
 	public float fireRate = 0.1f;
 	public float reloadTime = 1f;
+	public AudioClip shootSound;
+	public AudioClip reloadSound;
+	public float shotVolume = 0.4f;
+	public float reloadVolume = 0.5f;
 
 	[HideInInspector] public int bulletsInClip;
 }

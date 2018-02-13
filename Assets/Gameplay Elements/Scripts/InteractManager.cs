@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class InteractManager : MonoBehaviour
 {
 	public CanvasGroup interactUI;
+	public GameObject pickupEffect;
 	public Text interactText;
 	public LayerMask interactLayer;
 	public bool canInteract = true;

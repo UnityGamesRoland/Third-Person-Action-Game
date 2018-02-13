@@ -10,7 +10,10 @@ public class WeaponBullet : MonoBehaviour
 	private void Start()
 	{
 		//In case the bullet doesn't hit anything, destroy it a few seconds after it spawned.
-		Destroy(gameObject, 3);
+		Destroy(gameObject, 0.4f);
+
+		//Check if the bullet spawns inside an enemy.
+		CheckInitialHit();
 	}
 
 	private void Update()
@@ -42,7 +45,11 @@ public class WeaponBullet : MonoBehaviour
 			}
 
 			//Spawn the hit effect.
-			else Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+			else
+			{
+				GameObject effect = Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+				Destroy(effect, 0.1f);
+			}
 
 			//Destroy the bullet.
 			Destroy(gameObject);
@@ -58,7 +65,7 @@ public class WeaponBullet : MonoBehaviour
 		if(initialCollisions.Length > 0)
 		{
 			//Apply the damage on the first enemy's collider and destroy the bullet.
-			initialCollisions[0].transform.SendMessageUpwards("TakeDamage", 1);
+			initialCollisions[0].transform.SendMessageUpwards("TakeDamage", 1, SendMessageOptions.DontRequireReceiver);
 			Destroy(gameObject);
 		}
 	}

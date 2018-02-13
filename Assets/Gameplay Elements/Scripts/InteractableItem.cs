@@ -10,23 +10,20 @@ public class InteractableItem : MonoBehaviour
 	public int bullets = 10;
 	public WeaponAsset weapon;
 
-	public void Interact(GameObject playerObject)
+	public void Interact()
 	{
-		//Get the player information script.
-		PlayerInformation info = playerObject.GetComponent<PlayerInformation>();
-
 		//Check if the item is a weapon.
 		if(itemType == ItemType.weapon)
 		{
 			//Equip the new weapon.
-			info.EquipWeapon(weapon);
+			PlayerInformation.Instance.EquipWeapon(weapon);
 		}
 
 		//Check if the item is a bullet.
 		if(itemType == ItemType.bullets)
 		{
 			//Add the bullets to the inventory.
-			info.bullets += bullets;
+			PlayerInformation.Instance.bullets += bullets;
 		}
 
 		//Destroy the object after pickup.
