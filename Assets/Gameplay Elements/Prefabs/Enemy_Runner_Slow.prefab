@@ -1076,7 +1076,7 @@ GameObject:
   - component: {fileID: 195140348986595800}
   - component: {fileID: 114800449672810512}
   m_Layer: 9
-  m_Name: Enemy_Runner
+  m_Name: Enemy_Runner_Slow
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2128,7 +2128,7 @@ Animator:
   m_GameObject: {fileID: 1280085875524062}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0d6446b00d81a9641a2eca08eb97949f, type: 3}
-  m_Controller: {fileID: 9100000, guid: 0f2ee6eabd7d1444d88b3b175c659ea3, type: 2}
+  m_Controller: {fileID: 9100000, guid: fb80a1df40f688b4f92ccb2dac5f477c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2147,6 +2147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: befdf6d9a7bfd684ca88b4945384bf14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lootTable: {fileID: 11400000, guid: e1c0655a83d53554d959bb29c800bca7, type: 2}
   animator: {fileID: 95962437268950226}
   dieEffect: {fileID: 1901008037341670, guid: 51b00a5324de8fc49ba16cc545988c03, type: 2}
   body: {fileID: 137227057562204984}
@@ -2258,7 +2259,12 @@ SkinnedMeshRenderer:
   - {fileID: 4474924052695410}
   - {fileID: 4021540744929034}
   - {fileID: 4092499020557722}
-  m_BlendShapeWeights: []
+  m_BlendShapeWeights:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
   m_RootBone: {fileID: 4632010814587672}
   m_AABB:
     m_Center: {x: 0.041981414, y: -0.004274018, z: -0.012885295}
@@ -2323,7 +2329,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.4
-  m_Speed: 6.8
+  m_Speed: 4.3
   m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 500

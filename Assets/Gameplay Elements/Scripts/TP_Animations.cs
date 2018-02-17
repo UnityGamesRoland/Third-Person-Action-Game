@@ -11,9 +11,10 @@ public class TP_Animations : MonoBehaviour
 		cam = GetComponent<TP_Camera>();
 	}
 
-	public void AnimateCharacter(Vector2 moveDirection, float moveMagnitude, bool rotateToCursor)
+	public void AnimateCharacter(Vector2 moveDirection, float moveMagnitude)
 	{
-		if(rotateToCursor)
+		//Body animation: For Combat Mode
+		if(PlayerInformation.Instance.combatMode)
 		{
 			//Get the relative move direction.
 			Vector3 cameraForward = Vector3.Scale(cam.playerCamera.transform.up, new Vector3(1, 0, 1)).normalized;
@@ -34,7 +35,8 @@ public class TP_Animations : MonoBehaviour
 			animator.SetFloat("Turn", turn, 0.08f, Time.deltaTime);
 		}
 
-		else if(!rotateToCursor)
+		//Body animation: For Non-Combat Mode
+		else if(!PlayerInformation.Instance.combatMode)
 		{
 			//Set the animator paramaters.
 			animator.SetFloat("Forward", Mathf.Clamp(moveMagnitude, -1, 1), 0.08f, Time.deltaTime);

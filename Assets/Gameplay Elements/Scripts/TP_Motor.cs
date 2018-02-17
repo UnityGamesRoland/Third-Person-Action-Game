@@ -56,7 +56,7 @@ public class TP_Motor : MonoBehaviour
 		RotateBody(inputDir);
 
 		//Animate the character.
-		anim.AnimateCharacter(inputDir, new Vector2(controller.velocity.x, controller.velocity.z).magnitude / moveSpeed, info.combatMode);
+		anim.AnimateCharacter(inputDir, new Vector2(controller.velocity.x, controller.velocity.z).magnitude / moveSpeed);
 	}
 
 	private void Move(Vector2 direction)
@@ -183,7 +183,7 @@ public class TP_Motor : MonoBehaviour
 		//Start dashing coroutine if every statement is true.
 		if(dash && input != Vector2.zero && canDash && !passive.isDashing && canMove)
 		{
-			StartCoroutine(Dash(input, 0.25f));
+			StartCoroutine(Dash(input, 0.28f));
 		}
 
 		//Set the target speed to the move speed.

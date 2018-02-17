@@ -4,6 +4,7 @@ using System.Collections;
 
 public class AI_Runner : MonoBehaviour
 {
+	public LootAsset lootTable;
 	public Animator animator;
 	public GameObject dieEffect;
 	public Renderer body;
@@ -75,6 +76,10 @@ public class AI_Runner : MonoBehaviour
 		{
 			//Set the dying state of the enemy.
 			isDead = true;
+
+			//Get a random item from the loot table and spawn it.
+			GameObject loot = lootTable.GetRandomLoot();
+			if(loot != null) Instantiate(loot, transform.position, loot.transform.rotation);
 
 			//Spawn the destroy effect at the enemy's position.
 			GameObject destroyEffect = Instantiate(dieEffect, transform.position, transform.rotation);

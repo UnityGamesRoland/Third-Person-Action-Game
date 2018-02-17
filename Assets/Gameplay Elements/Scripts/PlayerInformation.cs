@@ -11,6 +11,7 @@ public class PlayerInformation : MonoBehaviour
 	public int bullets = 120;
 	public bool combatMode;
 	public bool canTakeDamage = true;
+	public bool isDead;
 
 	#region Singleton
 	public static PlayerInformation Instance {get; private set;}
@@ -51,13 +52,16 @@ public class PlayerInformation : MonoBehaviour
 	public void TakeHit(int damage)
 	{
 		//Check if the player can take damage.
-		if(!canTakeDamage) return;
+		if(!canTakeDamage || isDead) return;
 
 		//Play the explosion effect.
 		explodeParticle.Play();
 
 		//Calculate the new health amount.
 		health -= damage;
+
+		//Check if the player should be dead.
+		if(health <= 0) StartCoroutine(Die());
 	}
 
 	public void EquipWeapon(WeaponAsset newWeapon)
@@ -65,5 +69,22 @@ public class PlayerInformation : MonoBehaviour
 		//Gets called from <PickupManager> or <PlayerInformation>, sets the current weapon and its bullet amount.
 		weapon = newWeapon;
 		weapon.bulletsInClip = newWeapon.clipSize;
+	}
+
+	private IEnumerator Die()
+	{
+		//Set the dying state.
+		isDead = true;
+
+		//Update the time scale.
+		Time.timeScale = 0.05f;
+		Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+		//Temporary feature... Resurrect the player.
+		Debug.Log("Player is dead!");
+		yield return new WaitForSecondsRealtime(4);
+		isDead = false;
+		Time.timeScale = 1f;
+		Time.fixedDeltaTime = 0.02f * Time.timeScale;
 	}
 }

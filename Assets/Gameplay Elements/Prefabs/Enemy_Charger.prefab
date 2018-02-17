@@ -2191,6 +2191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d87557a5185a7b14f905fdeb5d12e314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lootTable: {fileID: 11400000, guid: e1c0655a83d53554d959bb29c800bca7, type: 2}
   animator: {fileID: 95704511915811516}
   chargeParticle: {fileID: 198670911012032590}
   dieEffect: {fileID: 1901008037341670, guid: 51b00a5324de8fc49ba16cc545988c03, type: 2}

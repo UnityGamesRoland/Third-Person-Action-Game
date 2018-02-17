@@ -21,4 +21,4 @@ MonoBehaviour:
   reloadSound: {fileID: 8300000, guid: c01924cc64907674f8f007e0820bde0f, type: 3}
   shotVolume: 0.4
   reloadVolume: 0.5
-  bulletsInClip: 40
+  bulletsInClip: 2
