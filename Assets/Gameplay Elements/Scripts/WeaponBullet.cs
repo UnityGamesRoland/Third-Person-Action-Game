@@ -5,12 +5,16 @@ public class WeaponBullet : MonoBehaviour
 	public GameObject surfaceHitEffect;
 	public GameObject enemyHitEffect;
 	public LayerMask collisionLayer;
+	public float bulletRadius = 0.5f;
+
+	private float bulletDamage;
 	private float bulletSpeed;
+	private bool isUltimate;
 
 	private void Start()
 	{
 		//In case the bullet doesn't hit anything, destroy it a few seconds after it spawned.
-		Destroy(gameObject, 0.4f);
+		Destroy(gameObject, 0.8f);
 
 		//Check if the bullet spawns inside an enemy.
 		CheckInitialHit();
@@ -35,44 +39,68 @@ public class WeaponBullet : MonoBehaviour
 		RaycastHit hit;
 
 		//Check if the ray hits something.
-		if(Physics.Raycast(ray, out hit, moveDistance, collisionLayer, QueryTriggerInteraction.Collide))
+		if(Physics.SphereCast(ray, bulletRadius, out hit, moveDistance, collisionLayer, QueryTriggerInteraction.Collide))
 		{
-			//Check if we hit an enemy and apply damage on him.
+			//On Hit: Enemy
 			if(hit.transform.CompareTag("Enemy"))
 			{
-				hit.transform.SendMessageUpwards("TakeDamage", 1);
+				//Apply damage and spawn hit effect.
+				hit.transform.SendMessageUpwards("TakeDamage", bulletDamage);
 				Instantiate(enemyHitEffect, hit.point, Quaternion.identity);
+
+				//Destroy the bullet.
+				if(!isUltimate) Destroy(gameObject);
 			}
 
-			//Spawn the hit effect.
+			//On Hit: Other
 			else
 			{
+				//Spawn hit effect.
 				GameObject effect = Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
 				Destroy(effect, 0.1f);
-			}
 
-			//Destroy the bullet.
-			Destroy(gameObject);
+				//Destroy the bullet.
+				Destroy(gameObject);
+			}
 		}
 	}
 
 	private void CheckInitialHit()
 	{
 		//Get an array of collisions the bullet is intersecting with.
-		Collider[] initialCollisions = Physics.OverlapSphere(transform.position, 0.1f, collisionLayer, QueryTriggerInteraction.Collide);
+		Collider[] initialCollisions = Physics.OverlapSphere(transform.position, bulletRadius, collisionLayer, QueryTriggerInteraction.Collide);
 
 		//Check the length of the array.
 		if(initialCollisions.Length > 0)
 		{
-			//Apply the damage on the first enemy's collider and destroy the bullet.
-			initialCollisions[0].transform.SendMessageUpwards("TakeDamage", 1, SendMessageOptions.DontRequireReceiver);
-			Destroy(gameObject);
+			//Check if this is a simple bullet.
+			if(!isUltimate)
+			{
+				//Apply damage on the first enemy's collider and destroy the bullet.
+				initialCollisions[0].transform.SendMessageUpwards("TakeDamage", bulletDamage, SendMessageOptions.DontRequireReceiver);
+				Destroy(gameObject);
+			}
+
+			//Check if this is a ultimate bullet.
+			else
+			{
+				//Apply damage on each enemy inside the bullet radius.
+				foreach(Collider col in initialCollisions) col.transform.SendMessageUpwards("TakeDamage", bulletDamage, SendMessageOptions.DontRequireReceiver);
+			}
 		}
 	}
 
-	public void SetSpeed(float speed)
+	public void InitializeBullet(int damage, float speed, bool ultimate)
 	{
-		//Gets called from <WeaponManager>, sets the bullet's speed.
+		//Gets called from <WeaponManager>, sets the bullet's damage and speed.
+		bulletDamage = damage;
 		bulletSpeed = speed;
+		isUltimate = ultimate;
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.color = Color.white;
+		Gizmos.DrawWireSphere(transform.position, bulletRadius);
 	}
 }

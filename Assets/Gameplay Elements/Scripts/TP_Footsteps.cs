@@ -14,7 +14,7 @@ public class TP_Footsteps : MonoBehaviour
 	{
 		//Initialization.
 		source = GetComponent<AudioSource>();
-		motor = GetComponent<TP_Motor>();
+		motor = TP_Motor.Instance;
 	}
 
 	private void OnControllerColliderHit(ControllerColliderHit hit)

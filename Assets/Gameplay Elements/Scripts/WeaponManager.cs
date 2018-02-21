@@ -4,7 +4,6 @@ using System.Collections;
 
 public class WeaponManager : MonoBehaviour
 {
-	public WeaponBullet bulletPrefab;
 	public Transform muzzlePosition;
 	public CanvasGroup weaponHUD;
 	public Text bulletsInClipText;
@@ -12,6 +11,9 @@ public class WeaponManager : MonoBehaviour
 
 	private float actionTimer;
 	private float shootTimer;
+
+	private float chargeProgress;
+	private bool isCharging;
 
 	private PlayerInformation info;
 	private AudioSource source;
@@ -38,18 +40,43 @@ public class WeaponManager : MonoBehaviour
 			//Update the weapon HUD.
 			weaponHUD.alpha = Mathf.Lerp(weaponHUD.alpha, 1, Time.deltaTime * 10);
 
-			//Check for shooting input.
-			if(Input.GetMouseButton(0) && info.weapon.bulletsInClip > 0 && Time.time > actionTimer && Time.time > shootTimer && !TP_Motor.Instance.passive.isDashing)
+			if(Time.time > actionTimer && !TP_Motor.Instance.passive.isDashing)
 			{
-				//Launch a projectile from the muzzle.
-				Shoot();
-			}
+				//Check for shooting input.
+				if(Input.GetMouseButton(0) && info.weapon.bulletsInClip > 0 && Time.time > shootTimer && !isCharging)
+				{
+					//Launch a projectile from the muzzle.
+					Shoot();
+				}
 
-			//Check for reloading input.
-			if(Input.GetKeyDown(KeyCode.R) && info.weapon.bulletsInClip < info.weapon.clipSize && Time.time > actionTimer && info.bullets > 0)
-			{
-				//Start the reloading process.
-				StartCoroutine(Reload());
+				if(Input.GetMouseButton(1))
+				{
+					//Update the charging state.
+					isCharging = true;
+
+					//Update the charge progress.
+					chargeProgress += Time.deltaTime * info.weapon.chargeSpeed;
+					chargeProgress = Mathf.Clamp01(chargeProgress);
+				}
+
+				if(Input.GetMouseButtonUp(1))
+				{
+					//Update the charging state.
+					isCharging = false;
+
+					//Check if the ultimate is charged.
+					if(chargeProgress >= 1) UnleashUltimate();
+
+					//Reset the charge progress.
+					chargeProgress = 0f;
+				}
+
+				//Check for reloading input.
+				if(Input.GetKeyDown(KeyCode.R) && info.weapon.bulletsInClip < info.weapon.clipSize && info.bullets > 0)
+				{
+					//Start the reloading process.
+					StartCoroutine(Reload());
+				}
 			}
 		}
 
@@ -57,6 +84,9 @@ public class WeaponManager : MonoBehaviour
 		{
 			//Update the weapon HUD.
 			weaponHUD.alpha = Mathf.Lerp(weaponHUD.alpha, 0, Time.deltaTime * 8);
+
+			//Reset the charge progress.
+			chargeProgress = 0f;
 		}
 	}
 
@@ -66,11 +96,14 @@ public class WeaponManager : MonoBehaviour
 		Vector3 spreadVector = new Vector3(Random.Range(-info.weapon.bulletSpread, info.weapon.bulletSpread), Random.Range(-info.weapon.bulletSpread, info.weapon.bulletSpread), 0);
 
 		//Store the instantiated bullet and set its damage and speed.
-		WeaponBullet bullet = Instantiate(bulletPrefab, muzzlePosition.position, Quaternion.Euler(muzzlePosition.localEulerAngles + spreadVector)) as WeaponBullet;
-		bullet.SetSpeed(info.weapon.bulletSpeed);
+		WeaponBullet bullet = Instantiate(info.weapon.mainBulletPrefab, muzzlePosition.position, Quaternion.Euler(muzzlePosition.localEulerAngles + spreadVector)) as WeaponBullet;
+		bullet.InitializeBullet(info.weapon.bulletDamage, info.weapon.bulletSpeed, false);
 
 		//Update the bullet count.
 		info.weapon.bulletsInClip --;
+
+		//Shake the camera.
+		TP_Camera.Instance.Shake(0.25f, 0.2f, 0);
 
 		//Play the shooting sound.
 		source.PlayOneShot(info.weapon.shootSound, info.weapon.shotVolume);
@@ -80,6 +113,22 @@ public class WeaponManager : MonoBehaviour
 
 		//After the shot check if we should reload or not.
 		if(info.weapon.bulletsInClip == 0 && Time.time > actionTimer && info.bullets > 0) StartCoroutine(Reload());
+	}
+
+	private void UnleashUltimate()
+	{
+		//Store the instantiated bullet and set its damage and speed.
+		WeaponBullet bullet = Instantiate(info.weapon.ultimateBulletPrefab, muzzlePosition.position, muzzlePosition.rotation) as WeaponBullet;
+		bullet.InitializeBullet(info.weapon.ultimateDamage, info.weapon.ultimateSpeed, true);
+
+		//Shake the camera.
+		TP_Camera.Instance.Shake(0.6f, 0.2f, 1);
+
+		//Play the shooting sound.
+		source.PlayOneShot(info.weapon.ultimateSound, info.weapon.shotVolume);
+
+		//Delay the shooting.
+		shootTimer = Time.time + (info.weapon.fireRate * 3);
 	}
 
 	private IEnumerator Reload()

@@ -5,7 +5,6 @@ using System.Collections;
 public class TP_Motor : MonoBehaviour
 {
 	public float moveSpeed = 5.9f;
-	public float gravity = -20f;
 	public LayerMask collisionLayer;
 
 	public bool canMove = true;
@@ -18,6 +17,7 @@ public class TP_Motor : MonoBehaviour
 	private Vector3[] originArray = new Vector3[4];
 	private Vector3 speedChangeVelocity;
 
+	private float gravity = -20f;
 	private float maxSlopeAngle;
 	private float rotationChangeVelocity;
 

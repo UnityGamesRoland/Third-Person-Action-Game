@@ -12,13 +12,22 @@ MonoBehaviour:
   m_Name: PrototypeRifle
   m_EditorClassIdentifier: 
   weaponName: Prototype Plasma Rifle
+  mainBulletPrefab: {fileID: 114874274160710816, guid: 5c76cfa9bba38d94d9d0ba45f80ae808,
+    type: 2}
+  ultimateBulletPrefab: {fileID: 114874274160710816, guid: bcb844e5e17d0b14c8a625d670d541a7,
+    type: 2}
+  bulletDamage: 1
+  ultimateDamage: 7
   clipSize: 40
   bulletSpread: 0.7
   bulletSpeed: 60
-  fireRate: 0.105
+  ultimateSpeed: 80
+  fireRate: 0.115
   reloadTime: 1.67
+  chargeSpeed: 5
   shootSound: {fileID: 8300000, guid: 359f0aea98291b2469d02e94f126cfd4, type: 3}
+  ultimateSound: {fileID: 8300000, guid: bac4b6a72382ccd489c21c8cd962c821, type: 3}
   reloadSound: {fileID: 8300000, guid: c01924cc64907674f8f007e0820bde0f, type: 3}
   shotVolume: 0.4
   reloadVolume: 0.5
-  bulletsInClip: 2
+  bulletsInClip: 40

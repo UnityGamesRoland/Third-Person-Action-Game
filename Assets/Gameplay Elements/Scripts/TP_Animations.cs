@@ -8,7 +8,7 @@ public class TP_Animations : MonoBehaviour
 	private void Start()
 	{
 		//Initialization.
-		cam = GetComponent<TP_Camera>();
+		cam = TP_Camera.Instance;
 	}
 
 	public void AnimateCharacter(Vector2 moveDirection, float moveMagnitude)
