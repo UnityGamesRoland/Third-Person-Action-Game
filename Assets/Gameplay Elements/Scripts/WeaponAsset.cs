@@ -6,22 +6,20 @@ public class WeaponAsset : ScriptableObject
 	//This is a modifiable and instancable unity asset, which holds a bunch of data that define a weapon.
 
 	public string weaponName = "New Weapon";
-	public WeaponBullet mainBulletPrefab;
-	public WeaponBullet ultimateBulletPrefab;
-	public int bulletDamage = 1;
-	public int ultimateDamage = 4;
+	public WeaponBullet bulletPrefab;
 	public int clipSize = 30;
+	public int bulletDamage = 1;
+	public int bulletHealth = 1;
 	public float bulletSpread = 1.2f;
 	public int bulletSpeed = 40;
-	public int ultimateSpeed = 65;
 	public float fireRate = 0.1f;
 	public float reloadTime = 1f;
-	public float chargeSpeed = 5f;
+	public Vector3 recoil = new Vector3(0.25f, 0.2f, 0);
 	public AudioClip shootSound;
-	public AudioClip ultimateSound;
 	public AudioClip reloadSound;
-	public float shotVolume = 0.4f;
-	public float reloadVolume = 0.5f;
+
+	[Range(0, 1)] public float shotVolume = 0.4f;
+	[Range(0, 1)] public float reloadVolume = 0.5f;
 
 	[HideInInspector] public int bulletsInClip;
 }

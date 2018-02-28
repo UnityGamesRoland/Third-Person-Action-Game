@@ -7,9 +7,9 @@ public class WeaponBullet : MonoBehaviour
 	public LayerMask collisionLayer;
 	public float bulletRadius = 0.5f;
 
-	private float bulletDamage;
+	private int bulletHealth;
+	private int bulletDamage;
 	private float bulletSpeed;
-	private bool isUltimate;
 
 	private void Start()
 	{
@@ -49,7 +49,8 @@ public class WeaponBullet : MonoBehaviour
 				Instantiate(enemyHitEffect, hit.point, Quaternion.identity);
 
 				//Destroy the bullet.
-				if(!isUltimate) Destroy(gameObject);
+				bulletHealth --;
+				if(bulletHealth == 0) Destroy(gameObject);
 			}
 
 			//On Hit: Other
@@ -57,7 +58,7 @@ public class WeaponBullet : MonoBehaviour
 			{
 				//Spawn hit effect.
 				GameObject effect = Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
-				Destroy(effect, 0.1f);
+				Destroy(effect, 0.23f);
 
 				//Destroy the bullet.
 				Destroy(gameObject);
@@ -73,29 +74,25 @@ public class WeaponBullet : MonoBehaviour
 		//Check the length of the array.
 		if(initialCollisions.Length > 0)
 		{
-			//Check if this is a simple bullet.
-			if(!isUltimate)
+			//Loop through the initial hit array.
+			for(int i = 0; i < initialCollisions.Length; i++)
 			{
-				//Apply damage on the first enemy's collider and destroy the bullet.
-				initialCollisions[0].transform.SendMessageUpwards("TakeDamage", bulletDamage, SendMessageOptions.DontRequireReceiver);
-				Destroy(gameObject);
-			}
+				//Apply damage on the current enemy and remove one health from the bullet.
+				initialCollisions[i].transform.SendMessageUpwards("TakeDamage", bulletDamage, SendMessageOptions.DontRequireReceiver);
 
-			//Check if this is a ultimate bullet.
-			else
-			{
-				//Apply damage on each enemy inside the bullet radius.
-				foreach(Collider col in initialCollisions) col.transform.SendMessageUpwards("TakeDamage", bulletDamage, SendMessageOptions.DontRequireReceiver);
+				//Destroy the bullet.
+				bulletHealth --;
+				if(bulletHealth == 0) Destroy(gameObject);
 			}
 		}
 	}
 
-	public void InitializeBullet(int damage, float speed, bool ultimate)
+	public void InitializeBullet(int damage, float speed, int health)
 	{
 		//Gets called from <WeaponManager>, sets the bullet's damage and speed.
+		bulletHealth = health;
 		bulletDamage = damage;
 		bulletSpeed = speed;
-		isUltimate = ultimate;
 	}
 
 	private void OnDrawGizmosSelected()

@@ -5,7 +5,6 @@ public class PlayerInformation : MonoBehaviour
 {
 	public ParticleSystem explodeParticle;
 	public ParticleSystem dashParticle;
-	public GameObject crosshairObject;
 	public WeaponAsset weapon;
 	public int health = 1;
 	public int bullets = 120;
@@ -31,9 +30,6 @@ public class PlayerInformation : MonoBehaviour
 	{
 		//Equip the initial weapon.
 		if(weapon != null) EquipWeapon(weapon);
-
-		//Make sure that the crosshair only shows when it supposed to.
-		crosshairObject.SetActive(combatMode);
 	}
 
 	private void Update()
@@ -45,7 +41,6 @@ public class PlayerInformation : MonoBehaviour
 		if(Input.GetKeyDown(KeyCode.X))
 		{
 			combatMode = !combatMode;
-			crosshairObject.SetActive(combatMode);
 		}
 	}
 

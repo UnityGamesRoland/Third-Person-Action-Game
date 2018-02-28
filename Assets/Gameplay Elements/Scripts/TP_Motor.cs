@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 using System.Collections;
 
 public class TP_Motor : MonoBehaviour
 {
 	public float moveSpeed = 5.9f;
 	public LayerMask collisionLayer;
+	public CanvasGroup dashHUD;
+	public CanvasGroup crosshairHUD;
 
 	public bool canMove = true;
 	public bool canDash = true;
@@ -15,11 +17,14 @@ public class TP_Motor : MonoBehaviour
 	private RayOrigins rayOrigin;
 
 	private Vector3[] originArray = new Vector3[4];
+	private Vector3 mousePoint;
 	private Vector3 speedChangeVelocity;
 
 	private float gravity = -20f;
 	private float maxSlopeAngle;
 	private float rotationChangeVelocity;
+
+	private Slider dashMeter;
 
 	private TP_Animations anim;
 	private PlayerInformation info;
@@ -39,9 +44,14 @@ public class TP_Motor : MonoBehaviour
 		anim = GetComponent<TP_Animations>();
 		info = PlayerInformation.Instance;
 		controller = GetComponent<CharacterController>();
+		dashMeter = dashHUD.gameObject.GetComponentInChildren<Slider>();
 
 		//Set the max slope angle.
 		maxSlopeAngle = controller.slopeLimit;
+
+		//Set the default alpha of the HUD elements.
+		crosshairHUD.alpha = info.combatMode ? 1 : 0;
+		dashHUD.alpha = (dashMeter.value > 0.98f) ? 0.2f : 1;
 	}
 
 	private void Update()
@@ -57,6 +67,17 @@ public class TP_Motor : MonoBehaviour
 
 		//Animate the character.
 		anim.AnimateCharacter(inputDir, new Vector2(controller.velocity.x, controller.velocity.z).magnitude / moveSpeed);
+	}
+
+	private void LateUpdate()
+	{
+		//Update the crosshair's position.
+		Vector3 screenPoint = Camera.main.WorldToScreenPoint(mousePoint);
+		crosshairHUD.transform.position = screenPoint;
+
+		//Update the alpha value of the HUD elements.
+		crosshairHUD.alpha = info.combatMode ? 1 : 0;
+		dashHUD.alpha = Mathf.Lerp(dashHUD.alpha, (dashMeter.value > 0.98f) ? 0.2f : 1, Time.deltaTime * ((dashMeter.value > 0.98f) ? 10 : 40));
 	}
 
 	private void Move(Vector2 direction)
@@ -149,8 +170,7 @@ public class TP_Motor : MonoBehaviour
 			if(rotationPlane.Raycast(ray, out rayDistance))
 			{
 				//Get the mouse point.
-				Vector3 mousePoint = ray.GetPoint(rayDistance);
-				info.crosshairObject.transform.position = mousePoint - Vector3.up;
+				mousePoint = ray.GetPoint(rayDistance);
 
 				//Get the look point and rotate the player.
 				Vector3 lookPoint = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
@@ -183,7 +203,7 @@ public class TP_Motor : MonoBehaviour
 		//Start dashing coroutine if every statement is true.
 		if(dash && input != Vector2.zero && canDash && !passive.isDashing && canMove)
 		{
-			StartCoroutine(Dash(input, 0.28f));
+			StartCoroutine(Dash(input, 0.31f));
 		}
 
 		//Set the target speed to the move speed.
@@ -204,7 +224,7 @@ public class TP_Motor : MonoBehaviour
 	private IEnumerator Dash(Vector2 direction, float dashTime)
 	{
 		//Get the dash velocity based on the input direction and move speed.
-		Vector2 dashVelocity = direction * moveSpeed * 2.7f;
+		Vector2 dashVelocity = direction * moveSpeed * 3f;
 
 		//Set the target speed to the dash velocity.
 		movement.targetSpeed.x = dashVelocity.x;
@@ -221,6 +241,10 @@ public class TP_Motor : MonoBehaviour
 		//Play the dashing particle.
 		info.dashParticle.Play();
 
+		//Update the dash meter.
+		StopCoroutine(SetDashMeter(0f, 0f));
+		StartCoroutine(SetDashMeter(0, dashTime));
+
 		//Wait for the dashing to complete.
 		yield return new WaitForSeconds(dashTime);
 
@@ -231,9 +255,30 @@ public class TP_Motor : MonoBehaviour
 		//Stop the dashing particle.
 		info.dashParticle.Stop();
 
+		//Update the dash meter.
+		StopCoroutine(SetDashMeter(0f, 0f));
+		StartCoroutine(SetDashMeter(1f, 1.1f));
+
 		//Delay the next dash.
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(1f);
 		canDash = true;
+	}
+
+	private IEnumerator SetDashMeter(float targetValue, float time)
+	{
+		//Reset the progress and get the start value.
+		float progress = 0f;
+		float startValue = dashMeter.value;
+
+		while(progress < 1)
+		{
+			//Smoothly reach the target value over time.
+			dashMeter.value = Mathf.Lerp(startValue, targetValue, progress);
+
+			//Update the progress.
+			progress += Time.deltaTime / time;
+			yield return null;
+		}
 	}
 
 	private void AssignVerticalRays()

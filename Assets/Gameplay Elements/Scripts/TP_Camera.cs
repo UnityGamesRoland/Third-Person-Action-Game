@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class TP_Camera : MonoBehaviour
@@ -11,7 +12,7 @@ public class TP_Camera : MonoBehaviour
 
 	private Vector3 positionChangeVelocity;
 	private bool isShaking;
-	private int shakeLayer;
+	private float shakeLayer;
 	private float shakePower;
 	private float shakeAmountX;
 	private float shakeAmountY;
@@ -35,7 +36,7 @@ public class TP_Camera : MonoBehaviour
 		playerCamera.transform.localRotation = Quaternion.Lerp(playerCamera.transform.localRotation, targetAngle, Time.deltaTime / 0.1f);
 	}
 
-	public void Shake(float amount, float length, int layer)
+	public void Shake(float amount, float length, float layer)
 	{
 		//Set the shake variable and start shaking the camera.
 		if(shakeLayer <= layer)
@@ -52,7 +53,7 @@ public class TP_Camera : MonoBehaviour
 		//Check if the player is alive.
 		if(PlayerInformation.Instance.isDead) return;
 
-		//Get the random shake amount and add it to the position.
+		//Get the random shake amount.
 		shakeAmountX = Random.value * shakePower * 2 - shakePower;
 		shakeAmountY = Random.value * shakePower * 2 - shakePower;
 
@@ -66,7 +67,7 @@ public class TP_Camera : MonoBehaviour
 		CancelInvoke("BeginShake");
 		shakeAmountX = 0f;
 		shakeAmountY = 0f;
-		shakeLayer = 0;
+		shakeLayer = 0f;
 		isShaking = false;
 	}
 }
