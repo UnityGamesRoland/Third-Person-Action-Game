@@ -88,6 +88,9 @@ public class WeaponManager : MonoBehaviour
 		//Update the action timer and add a bit of delay to ensure that the reload process is finished before shooting.
 		actionTimer = Time.time + info.weapon.reloadTime + 0.1f;
 
+		//Play the reload animation.
+		TP_Animations.Instance.PlayReloadAnimation();
+
 		//Play the shooting sound.
 		source.PlayOneShot(info.weapon.reloadSound, info.weapon.reloadVolume);
 

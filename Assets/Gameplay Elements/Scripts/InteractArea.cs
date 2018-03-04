@@ -80,8 +80,9 @@ public class InteractArea : MonoBehaviour
 				interactableObjects.Remove(closestInteractable);
 				closestInteractable.Interact();
 
-				//Create the pickup effect.
-				Instantiate(manager.pickupEffect, closestInteractable.transform.position, manager.pickupEffect.transform.rotation);
+				//Create the pickup effect. This will play the pickup sound as well.
+				GameObject pickupEffect = Instantiate(manager.pickupEffect, closestInteractable.transform.position, manager.pickupEffect.transform.rotation);
+				Destroy(pickupEffect, 1f);
 
 				//Update the manager's interaction state.
 				if(interactableObjects.Count == 0) manager.hasAvailableInteraction = false;

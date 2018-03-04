@@ -58,7 +58,7 @@ public class WeaponBullet : MonoBehaviour
 			{
 				//Spawn hit effect.
 				GameObject effect = Instantiate(surfaceHitEffect, hit.point, Quaternion.LookRotation(hit.normal));
-				Destroy(effect, 0.23f);
+				Destroy(effect, 0.75f);
 
 				//Destroy the bullet.
 				Destroy(gameObject);

@@ -15,8 +15,9 @@ public class InteractTrigger : MonoBehaviour
 		//Make sure that the collider which entered the area is the player's collider.
 		if(!col.CompareTag("Player")) return;
 
-		//Create the pickup effect.
-		Instantiate(manager.pickupEffect, transform.position, manager.pickupEffect.transform.rotation);
+		//Create the pickup effect. This will play the pickup sound as well.
+		GameObject pickupEffect = Instantiate(manager.pickupEffect, transform.position, manager.pickupEffect.transform.rotation);
+		Destroy(pickupEffect, 1f);
 
 		//Send the player object through and execute the interaction with the object.
 		GetComponent<InteractableItem>().Interact();

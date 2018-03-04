@@ -6,6 +6,7 @@ public class TP_Motor : MonoBehaviour
 {
 	public float moveSpeed = 5.9f;
 	public LayerMask collisionLayer;
+	public SkinnedMeshRenderer bodyRenderer;
 	public CanvasGroup dashHUD;
 	public CanvasGroup crosshairHUD;
 
@@ -14,7 +15,6 @@ public class TP_Motor : MonoBehaviour
 
 	public MovementInfo movement;
 	public PassiveStates passive;
-	private RayOrigins rayOrigin;
 
 	private Vector3[] originArray = new Vector3[4];
 	private Vector3 mousePoint;
@@ -25,6 +25,7 @@ public class TP_Motor : MonoBehaviour
 	private float rotationChangeVelocity;
 
 	private Slider dashMeter;
+	private RayOrigins rayOrigin;
 
 	private TP_Animations anim;
 	private PlayerInformation info;
@@ -238,8 +239,10 @@ public class TP_Motor : MonoBehaviour
 		passive.isDashing = true;
 		canDash = false;
 
-		//Play the dashing particle.
+		//Play the dashing particle and set the body color.
 		info.dashParticle.Play();
+		bodyRenderer.material.SetColor("_Color", Color.white);
+		bodyRenderer.material.SetColor("_EmissionColor", new Color(0f, 0.65f, 1f));
 
 		//Update the dash meter.
 		StopCoroutine(SetDashMeter(0f, 0f));
@@ -259,9 +262,34 @@ public class TP_Motor : MonoBehaviour
 		StopCoroutine(SetDashMeter(0f, 0f));
 		StartCoroutine(SetDashMeter(1f, 1.1f));
 
+		//Fade the body color.
+		StopCoroutine(FadeBodyEmission());
+		StartCoroutine(FadeBodyEmission());
+
 		//Delay the next dash.
 		yield return new WaitForSeconds(1f);
 		canDash = true;
+	}
+
+	private IEnumerator FadeBodyEmission()
+	{
+		//Reset the progress and get the current colors.
+		float progress = 0f;
+		Color startBaseColor = bodyRenderer.material.GetColor("_Color");
+		Color startEmissionColor = bodyRenderer.material.GetColor("_EmissionColor");
+
+		while(progress < 1)
+		{
+			//Update the body color.
+			Color newBaseColor = Color.Lerp(startBaseColor, Color.black, progress);
+			Color newEmissionColor = Color.Lerp(startEmissionColor, Color.black, progress);
+			bodyRenderer.material.SetColor("_Color", newBaseColor);
+			bodyRenderer.material.SetColor("_EmissionColor", newEmissionColor);
+
+			//Update the progress.
+			progress += Time.deltaTime / 0.7f;
+			yield return null;
+		}
 	}
 
 	private IEnumerator SetDashMeter(float targetValue, float time)

@@ -21,9 +21,9 @@ MonoBehaviour:
   bulletSpeed: 60
   fireRate: 0.115
   reloadTime: 1.67
-  recoil: {x: 0.25, y: 0.2, z: 0}
+  recoil: {x: 0.22, y: 0.17, z: 0}
   shootSound: {fileID: 8300000, guid: 359f0aea98291b2469d02e94f126cfd4, type: 3}
   reloadSound: {fileID: 8300000, guid: c01924cc64907674f8f007e0820bde0f, type: 3}
-  shotVolume: 0.4
+  shotVolume: 0.3
   reloadVolume: 0.5
-  bulletsInClip: 11
+  bulletsInClip: 8

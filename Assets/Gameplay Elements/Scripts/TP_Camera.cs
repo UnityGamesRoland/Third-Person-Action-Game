@@ -57,6 +57,10 @@ public class TP_Camera : MonoBehaviour
 		shakeAmountX = Random.value * shakePower * 2 - shakePower;
 		shakeAmountY = Random.value * shakePower * 2 - shakePower;
 
+		//Keep randomizing the shake amount until we get it powerful enough.
+		while(Mathf.Abs(shakeAmountX) < shakePower * 0.3f) shakeAmountX = Random.value * shakePower * 2 - shakePower;
+		while(Mathf.Abs(shakeAmountY) < shakePower * 0.3f) shakeAmountY = Random.value * shakePower * 2 - shakePower;
+
 		//Update the shaking state.
 		isShaking = true;
 	}
