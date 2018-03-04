@@ -106,7 +106,7 @@ public class TP_Motor : MonoBehaviour
 		controller.Move(movement.moveVelocity * Time.deltaTime);
 
 		//Reset the gravity force.
-		if(passive.isGrounded) movement.currentSpeed.y = 0;
+		if(passive.isGrounded) movement.currentSpeed.y = 0f;
 	}
 
 	private void DescendSlope(ref Vector3 direction)
@@ -122,7 +122,7 @@ public class TP_Motor : MonoBehaviour
 			RaycastHit descendHit;
 
 			//Check if the ray hit something.
-			if(Physics.Raycast(descendRay, out descendHit, 100, collisionLayer))
+			if(Physics.Raycast(descendRay, out descendHit, 100f, collisionLayer))
 			{
 				//Get the angle of the surface that we are standing on.
 				float slopeAngle = Vector3.Angle(descendHit.normal, Vector3.up);
@@ -356,3 +356,4 @@ public class TP_Motor : MonoBehaviour
 		}
 	}
 }
+

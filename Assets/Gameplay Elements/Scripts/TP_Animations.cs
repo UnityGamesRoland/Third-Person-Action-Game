@@ -19,6 +19,10 @@ public class TP_Animations : MonoBehaviour
 		bool combatMode = PlayerInformation.Instance.combatMode;
 		animator.SetBool("CombatMode", combatMode);
 
+		//Get the grounded state and set the animator's paramater.
+		bool grounded = TP_Motor.Instance.passive.isGrounded;
+		animator.SetBool("Grounded", grounded);
+
 		//Calculate the move magnitude and set the animator's paramater.
 		float magnitude = TP_Motor.Instance.passive.isMoving ? Mathf.Clamp01(moveMagnitude) : 1f;
 		animator.SetFloat("PlaybackSpeed", magnitude);
