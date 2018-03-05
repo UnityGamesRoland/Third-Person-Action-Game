@@ -173,6 +173,9 @@ public class TP_Motor : MonoBehaviour
 				//Get the mouse point.
 				mousePoint = ray.GetPoint(rayDistance);
 
+				//Check if we have a weapon in hand and correct the mouse point's height.
+				if(info.weapon != null) mousePoint += Vector3.up * 0.4f;
+
 				//Get the look point and rotate the player.
 				Vector3 lookPoint = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
 				transform.LookAt(lookPoint);
@@ -189,8 +192,11 @@ public class TP_Motor : MonoBehaviour
 
 	private void SetCharacterStates(Vector2 input)
 	{
+		//Update the ray origin array.
+		AssignVerticalRays();
+
 		//Reset the passive states.
-		passive.isGrounded = controller.isGrounded;
+		passive.isGrounded = CheckGroundCollision();
 		passive.isMoving = (input.magnitude > 0) ? true : false;
 		passive.isOnSlope = false;
 		passive.isDescendingSlope = false;
@@ -262,12 +268,13 @@ public class TP_Motor : MonoBehaviour
 		StopCoroutine(SetDashMeter(0f, 0f));
 		StartCoroutine(SetDashMeter(1f, 1.1f));
 
-		//Fade the body color.
+		//Fade the body color after a bit of delay.
+		yield return new WaitForSeconds(0.12f);
 		StopCoroutine(FadeBodyEmission());
 		StartCoroutine(FadeBodyEmission());
 
 		//Delay the next dash.
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(0.78f);
 		canDash = true;
 	}
 
@@ -287,7 +294,7 @@ public class TP_Motor : MonoBehaviour
 			bodyRenderer.material.SetColor("_EmissionColor", newEmissionColor);
 
 			//Update the progress.
-			progress += Time.deltaTime / 0.7f;
+			progress += Time.deltaTime / 0.4f;
 			yield return null;
 		}
 	}
@@ -319,6 +326,31 @@ public class TP_Motor : MonoBehaviour
 		originArray[1] = rayOrigin.rightRay;
 		originArray[2] = rayOrigin.topRay;
 		originArray[3] = rayOrigin.bottomRay;
+	}
+
+	private bool CheckGroundCollision()
+	{
+		//Stores the final outcome of the method.
+		bool grounded = false;
+
+		//Loop through the vertical rays to find out if we are on a slope or not.
+		for(int i = 0; i < originArray.Length; i++)
+		{
+			//Shoot a ray downwards from the current origin point.
+			Ray verticalRay = new Ray(originArray[i], Vector3.down);
+			RaycastHit verticalHit;
+
+			//Check if the ray hit something.
+			if(Physics.Raycast(verticalRay, out verticalHit, 1f, collisionLayer))
+			{
+				//Set the grounded state.
+				grounded = true;
+				Debug.DrawRay(verticalRay.origin, verticalRay.direction * 1f);
+			}
+		}
+
+		//Return the grounded state.
+		return grounded;
 	}
 
 	public struct MovementInfo

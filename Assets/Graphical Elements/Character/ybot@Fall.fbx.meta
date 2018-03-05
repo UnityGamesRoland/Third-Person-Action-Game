@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 49c7818685f0bfb488014542adb68aac
-timeCreated: 1520152321
+guid: d014eda1bc2857d46b4b4ac05757c60a
+timeCreated: 1520163738
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -182,7 +182,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -194,7 +194,7 @@ ModelImporter:
       name: Fall
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 21
+      lastFrame: 32
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

@@ -22,6 +22,10 @@ MonoBehaviour:
   fireRate: 0.72
   reloadTime: 4.13
   recoil: {x: 0.3, y: 0.2, z: 0}
+  positionOffsetInHand: {x: 0, y: 0, z: 0}
+  rotationOffsetInHand: {x: 0, y: 0, z: 0}
+  positionOffsetOnBack: {x: 0, y: 0, z: 0}
+  rotationOffsetOnBack: {x: 0, y: 0, z: 0}
   shootSound: {fileID: 8300000, guid: bac4b6a72382ccd489c21c8cd962c821, type: 3}
   reloadSound: {fileID: 8300000, guid: d7387b6bdcb6c7c46ba8267565816851, type: 3}
   shotVolume: 0.4

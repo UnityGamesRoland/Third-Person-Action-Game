@@ -15,6 +15,10 @@ public class WeaponAsset : ScriptableObject
 	public float fireRate = 0.1f;
 	public float reloadTime = 1f;
 	public Vector3 recoil = new Vector3(0.25f, 0.2f, 0);
+	public Vector3 positionOffsetInHand;
+	public Vector3 rotationOffsetInHand;
+	public Vector3 positionOffsetOnBack;
+	public Vector3 rotationOffsetOnBack;
 	public AudioClip shootSound;
 	public AudioClip reloadSound;
 

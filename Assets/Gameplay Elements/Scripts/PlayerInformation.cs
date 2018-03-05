@@ -12,6 +12,8 @@ public class PlayerInformation : MonoBehaviour
 	public bool canTakeDamage = true;
 	public bool isDead;
 
+	[HideInInspector] public GameObject weaponObject;
+
 	#region Singleton
 	public static PlayerInformation Instance {get; private set;}
 	private void Awake()
@@ -61,9 +63,14 @@ public class PlayerInformation : MonoBehaviour
 
 	public void EquipWeapon(WeaponAsset newWeapon)
 	{
-		//Gets called from <PickupManager> or <PlayerInformation>, sets the current weapon and its bullet amount.
+		//Set the current weapon and its bullet amount.
 		weapon = newWeapon;
 		weapon.bulletsInClip = newWeapon.clipSize;
+
+		//Set the weapon object and the muzzle transform.
+		weaponObject = GameObject.Find(newWeapon.weaponName);
+		if(weaponObject != null) WeaponManager.Instance.muzzleTransform = weaponObject.transform.Find("C_Muzzle");
+
 	}
 
 	private IEnumerator Die()
