@@ -65,8 +65,28 @@ public class TP_Animations : MonoBehaviour
 	public void PlayReloadAnimation()
 	{
 		//Start the reload animation process.
-		StopCoroutine(AnimateReload());
+		StopAllCoroutines();
 		StartCoroutine(AnimateReload());
+	}
+
+	public void PlayDrawAnimation()
+	{
+		//Set the action timer.
+		WeaponManager.Instance.actionTimer = Time.time + 0.55f;
+
+		//Start the draw animation process.
+		StopAllCoroutines();
+		StartCoroutine(AnimateDraw());
+	}
+
+	public void PlayHolsterAnimation()
+	{
+		//Set the action timer.
+		WeaponManager.Instance.actionTimer = Time.time + 0.55f;
+
+		//Start the holster animation process.
+		StopAllCoroutines();
+		StartCoroutine(AnimateHolster());
 	}
 
 	private IEnumerator AnimateReload()
@@ -77,6 +97,78 @@ public class TP_Animations : MonoBehaviour
 
 		//Wait for the reloading to finish then disable the action layer.
 		yield return new WaitForSeconds(PlayerInformation.Instance.weapon.reloadTime);
-		animator.SetLayerWeight(1, 0);
+
+		//Set the target layer weight and the progress.
+		float weight = 1f;
+		float progress = 0f;
+
+		while(progress < 1)
+		{
+			//Update the layer weight.
+			weight = Mathf.Lerp(1f, 0f, progress);
+			animator.SetLayerWeight(1, weight);
+
+			//Update the progress.
+			progress += Time.deltaTime / 0.2f;
+			yield return null;
+		}
+	}
+
+	private IEnumerator AnimateDraw()
+	{
+		//Enable the action layer and start the drawing animation.
+		animator.SetLayerWeight(1, 1);
+		animator.CrossFade("Rifle Draw", 0.1f, 1);
+
+		//Update the weapon's placing. Delay required to match the weapon placement with the animation.
+		yield return new WaitForSeconds(0.31f);
+		WeaponManager.Instance.weaponInHand = true;
+
+		//Wait for the drawing to finish then disable the action layer.
+		yield return new WaitForSeconds(0.19f);
+
+		//Set the target layer weight and the progress.
+		float weight = 1f;
+		float progress = 0f;
+
+		while(progress < 1)
+		{
+			//Update the layer weight.
+			weight = Mathf.Lerp(1f, 0f, progress);
+			animator.SetLayerWeight(1, weight);
+
+			//Update the progress.
+			progress += Time.deltaTime / 0.2f;
+			yield return null;
+		}
+	}
+
+	private IEnumerator AnimateHolster()
+	{
+		//Enable the action layer and start the holstering animation.
+		animator.SetLayerWeight(1, 1);
+		animator.CrossFade("Rifle Holster", 0.2f, 1);
+
+		//Update the weapon's placing. Delay required to match the weapon placement with the animation.
+		yield return new WaitForSeconds(0.37f);
+		WeaponManager.Instance.weaponInHand = false;
+
+		//Wait for the holstering to finish then disable the action layer.
+		yield return new WaitForSeconds(0.18f);
+
+		//Set the target layer weight and the progress.
+		float weight = 1f;
+		float progress = 0f;
+
+		while(progress < 1)
+		{
+			//Update the layer weight.
+			weight = Mathf.Lerp(1f, 0f, progress);
+			animator.SetLayerWeight(1, weight);
+
+			//Update the progress.
+			progress += Time.deltaTime / 0.2f;
+			yield return null;
+		}
 	}
 }

@@ -157,6 +157,9 @@ public class TP_Motor : MonoBehaviour
 
 	private void RotateBody(Vector2 direction)
 	{
+		//Check if the game is paused.
+		if(PauseManager.Instance.isPaused) return;
+
 		//Body rotation: To Cursor
 		if(info.combatMode)
 		{
@@ -167,18 +170,18 @@ public class TP_Motor : MonoBehaviour
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			float rayDistance;
 
-			//Rotate the character.
+			//Check where did the ray hit the plane.
 			if(rotationPlane.Raycast(ray, out rayDistance))
 			{
 				//Get the mouse point.
 				mousePoint = ray.GetPoint(rayDistance);
 
-				//Check if we have a weapon in hand and correct the mouse point's height.
-				if(info.weapon != null) mousePoint += Vector3.up * 0.4f;
+				//Correct the mouse point's height if we have a weapon in hand.
+				if(info.weapon != null) mousePoint += Vector3.up * 0.28f;
 
-				//Get the look point and rotate the player.
-				Vector3 lookPoint = new Vector3(mousePoint.x, transform.position.y, mousePoint.z);
-				transform.LookAt(lookPoint);
+				//Get the look rotation and rotate the player to the mouse point.
+				Quaternion lookRotation = Quaternion.LookRotation(new Vector3(mousePoint.x, transform.position.y, mousePoint.z) - transform.position);
+				transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime / 0.035f);
 			}
 		}
 
@@ -266,7 +269,7 @@ public class TP_Motor : MonoBehaviour
 
 		//Update the dash meter.
 		StopCoroutine(SetDashMeter(0f, 0f));
-		StartCoroutine(SetDashMeter(1f, 1.1f));
+		StartCoroutine(SetDashMeter(1f, 1.02f));
 
 		//Fade the body color after a bit of delay.
 		yield return new WaitForSeconds(0.12f);

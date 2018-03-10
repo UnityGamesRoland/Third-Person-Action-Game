@@ -50,7 +50,7 @@ public class AI_Charger : MonoBehaviour
 		distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
 
 		//Check if the player is in explosion range.
-		if(distanceToTarget <= 1.4f && target.canTakeDamage)
+		if(distanceToTarget <= 1.4f && target.canTakeDamage && !PauseManager.Instance.isPaused)
 		{
 			//Apply the damage on the player and destroy the enemy.
 			target.TakeHit(1);
@@ -104,7 +104,7 @@ public class AI_Charger : MonoBehaviour
 
 	private IEnumerator UpdateDestination()
 	{
-		//Check if the enemy has a target.
+		//Check if the enemy can get a new destination.
 		while(target != null && !isDead && !isCharging)
 		{
 			//Check if the enemy can charge.

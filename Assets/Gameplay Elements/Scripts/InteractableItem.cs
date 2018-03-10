@@ -12,6 +12,9 @@ public class InteractableItem : MonoBehaviour
 
 	public void Interact()
 	{
+		//Check if we can interact.
+		if(!InteractManager.Instance.canInteract) return;
+
 		//Check if the item is a weapon.
 		if(itemType == ItemType.weapon)
 		{

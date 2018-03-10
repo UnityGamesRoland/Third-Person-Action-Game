@@ -13,10 +13,9 @@ public class WeaponManager : MonoBehaviour
 	public LayerMask muzzleCollisionLayer;
 
 	[HideInInspector] public Transform muzzleTransform;
-
-	private bool isReloading;
-	private float actionTimer;
-	private float shootTimer;
+	[HideInInspector] public bool weaponInHand;
+	[HideInInspector] public float actionTimer;
+	[HideInInspector] public float shootTimer;
 
 	private PlayerInformation info;
 	private AudioSource source;
@@ -42,7 +41,7 @@ public class WeaponManager : MonoBehaviour
 	private void Update()
 	{
 		//Check if we have a weapon.
-		if(info.weapon != null)
+		if(info.weapon != null && !PauseManager.Instance.isPaused)
 		{
 			//Update the weapon's position and rotation.
 			UpdateWeaponPosition();
@@ -84,7 +83,7 @@ public class WeaponManager : MonoBehaviour
 		if(info.weaponObject == null) return;
 
 		//Weapon placing: In Hand
-		if(info.combatMode || isReloading)
+		if(weaponInHand)
 		{
 			info.weaponObject.transform.SetParent(handTransform);
 			info.weaponObject.transform.localPosition = info.weapon.positionOffsetInHand;
@@ -147,7 +146,6 @@ public class WeaponManager : MonoBehaviour
 	private IEnumerator Reload()
 	{
 		//Update the action timer and add a bit of delay to ensure that the reload process is finished before shooting.
-		isReloading = true;
 		actionTimer = Time.time + info.weapon.reloadTime + 0.1f;
 
 		//Play the reload animation.
@@ -177,8 +175,5 @@ public class WeaponManager : MonoBehaviour
 			info.weapon.bulletsInClip += bulletsToLoad;
 			info.bullets -= bulletsToLoad;
 		}
-
-		//Update the reloading state.
-		isReloading = false;
 	}
 }

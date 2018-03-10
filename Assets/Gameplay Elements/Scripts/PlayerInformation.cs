@@ -37,12 +37,17 @@ public class PlayerInformation : MonoBehaviour
 	private void Update()
 	{
 		//Temporary feature... Hide mouse cursor.
-		Cursor.visible = false;
+		Cursor.visible = PauseManager.Instance.isPaused ? true : false;
 
-		//Temporary feature... Switch combat state on key press.
-		if(Input.GetKeyDown(KeyCode.X))
+		//Temporary feature... Switch combat state on key press. (Extra delay to allow animation exit time to finish)
+		if(Input.GetKeyDown(KeyCode.X) && !PauseManager.Instance.isPaused && Time.time > WeaponManager.Instance.actionTimer + 0.22f)
 		{
+			//Switch the combat mode.
 			combatMode = !combatMode;
+
+			//Play the draw/holster animation based on the combat mode.
+			if(combatMode) TP_Animations.Instance.PlayDrawAnimation();
+			else TP_Animations.Instance.PlayHolsterAnimation();
 		}
 	}
 
@@ -83,8 +88,7 @@ public class PlayerInformation : MonoBehaviour
 		Time.fixedDeltaTime = 0.02f * Time.timeScale;
 
 		//Temporary feature... Resurrect the player.
-		Debug.Log("Player is dead!");
-		yield return new WaitForSecondsRealtime(4);
+		yield return new WaitForSecondsRealtime(1.5f);
 		isDead = false;
 		Time.timeScale = 1f;
 		Time.fixedDeltaTime = 0.02f * Time.timeScale;

@@ -14,6 +14,14 @@ public class InteractManager : MonoBehaviour
 
 	private string closestItemName;
 
+	#region Singleton
+	public static InteractManager Instance {get; private set;}
+	private void Awake()
+	{
+		if(Instance == null) Instance = this;
+	}
+	#endregion
+
 	private void Start()
 	{
 		//Set the starting interact UI alpha.

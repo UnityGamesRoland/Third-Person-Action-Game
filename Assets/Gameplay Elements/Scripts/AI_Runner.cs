@@ -39,7 +39,7 @@ public class AI_Runner : MonoBehaviour
 	private void Update()
 	{
 		//Check if the enemy can attack.
-		if(Time.time > attackTimer)
+		if(Time.time > attackTimer && !PauseManager.Instance.isPaused)
 		{
 			//Calculate the distance and check if the enemy is in range to attack.
 			float distanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
@@ -111,7 +111,7 @@ public class AI_Runner : MonoBehaviour
 
 	private IEnumerator UpdateDestination()
 	{
-		//Check if the enemy has a target.
+		//Check if the enemy can get a new destination.
 		while(target != null && !isDead)
 		{
 			//Calculate and visualize the target position.
