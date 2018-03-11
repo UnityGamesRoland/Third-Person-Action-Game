@@ -6,6 +6,7 @@ public class UI_Layer
 {
 	public string layerName;
 	public int layerIndex;
+	public int parentLayerIndex;
 	public GameObject layerObject;
 	public UI_Element firstElement;
 }
@@ -18,7 +19,6 @@ public class UI_Manager : MonoBehaviour
 	[HideInInspector] public UI_Layer selectedLayer;
 	[HideInInspector] public UI_Element selectedElement;
 
-	private UI_Layer previousLayer;
 	private PauseManager pause;
 	private bool controlsGamePause = false;
 
@@ -32,6 +32,9 @@ public class UI_Manager : MonoBehaviour
 
 	private void Start()
 	{
+		//Disable all layer objects at start.
+		foreach(UI_Layer layer in layers) layer.layerObject.SetActive(false);
+
 		//Move to the base layer at game start.
 		MoveToLayer(0);
 
@@ -50,7 +53,7 @@ public class UI_Manager : MonoBehaviour
 	private void GetNavigationInput()
 	{
 		//Moving to next layer: Below <selectedLayer>
-		if(Input.GetKeyDown(KeyCode.Escape) && !PlayerInformation.Instance.isDead) HandleEscapeInput();
+		if(Input.GetKeyDown(KeyCode.Escape)) HandleEscapeInput();
 
 		//Check if we can interact with the UI.
 		if(!interactable) return;
@@ -113,6 +116,9 @@ public class UI_Manager : MonoBehaviour
 			//Check if the game is not paused.
 			else
 			{
+				//Prevent game from being paused after player died.
+				if(PlayerInformation.Instance.isDead) return;
+
 				//Pause the game and move to base layer.
 				pause.PauseGame();
 				MoveToLayer(0);
@@ -133,10 +139,10 @@ public class UI_Manager : MonoBehaviour
 
 	public void MoveToLayer(int index)
 	{
-		//Disable the current layer's element holder object.
+		//Check if there is a layer selected.
 		if(selectedLayer.layerName != "")
 		{
-			previousLayer = selectedLayer;
+			//Disable the current layer's element holder object.
 			selectedElement.outlineObject.SetActive(false);
 			selectedLayer.layerObject.SetActive(false);
 		}
@@ -159,10 +165,29 @@ public class UI_Manager : MonoBehaviour
 
 	public void MoveToPreviousLayer()
 	{
-		//Check if there was a previous layer and move to it.
-		if(previousLayer.layerName != "") MoveToLayer(previousLayer.layerIndex);
+		//Check if there is a layer selected.
+		if(selectedLayer.layerName != "")
+		{
+			//Currently selected layer is the base layer. Return.
+			if(selectedLayer.parentLayerIndex == -1) return;
 
-		//No previous layer. Returning to base layer.
+			//Get the target layer weight.
+			int targetLayerIndex = selectedLayer.parentLayerIndex;
+
+			//Loop through the layer array.
+			for(int i = 0; i < layers.Length; i++)
+			{
+				//Check if the layer index is matching.
+				if(layers[i].layerIndex == targetLayerIndex)
+				{
+					//Update the selected layer and its corresponding elements.
+					MoveToLayer(i);
+					break;
+				}
+			}
+		}
+
+		//No layer selected. Returning to base layer.
 		else MoveToLayer(0);
 	}
 
