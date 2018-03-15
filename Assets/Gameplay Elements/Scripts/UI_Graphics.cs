@@ -10,6 +10,9 @@ public class UI_Graphics : MonoBehaviour
 	private void Awake()
 	{
 		if(Instance == null) Instance = this;
+
+		//Make sure that the screen blur is disabled at start.
+		graphicsProfile.depthOfField.enabled = false;
 	}
 	#endregion
 }

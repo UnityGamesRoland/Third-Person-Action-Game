@@ -7,8 +7,8 @@ public class PauseManager : MonoBehaviour
 	public CanvasGroup pauseUI;
 	public bool isPaused;
 
-	private bool unpausedCanMove;
-	private bool unpausedCanInteract;
+	private bool unpausedCanMove = true;
+	private bool unpausedCanInteract = true;
 
 	private InteractManager interact;
 	private PlayerInformation info;
@@ -34,8 +34,8 @@ public class PauseManager : MonoBehaviour
 		pauseUI.interactable = isPaused;
 		pauseUI.blocksRaycasts = isPaused;
 
-		//Set the initial screen blur.
-		UI_Graphics.Instance.graphicsProfile.depthOfField.enabled = isPaused;
+		//Initialize the pause menu.
+		ContinueGame();
 	}
 
 	private void Update()
@@ -48,7 +48,7 @@ public class PauseManager : MonoBehaviour
 
 	public void PauseGame()
 	{
-		//IMPORTANT! Since dash particle is handled in coroutine, it has to be paused before time scale gets set to prevent memory leak.
+		//IMPORTANT! Since dash particle is fucked, it has to be paused before time scale gets set to prevent memory leak.
 		info.dashParticle.Pause();
 
 		//Update the paused state.

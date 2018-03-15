@@ -20,8 +20,8 @@ public class PlayerInformation : MonoBehaviour
 	{
 		if(Instance == null) Instance = this;
 
-		//Stop the dashing particle.
-		dashParticle.Stop();
+		//IMPORTANT! Since dash particle is fucked, it has to be paused before game starts to prevent memory leak.
+		dashParticle.Pause();
 
 		//Make sure that the explosion effect only plays when it supposed to.
 		explodeParticle.Stop();
